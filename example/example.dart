@@ -14,7 +14,7 @@ Future<void> main() async {
 
   final res = await builder
       .body(payload)
-      .get('posts', timeout: Duration(milliseconds: 700));
+      .get('posts', timeout: Duration(milliseconds: 800));
 
   final todos = res.toJsonList().listOf(TodoModel.fromJson);
   for (var e in todos) {
@@ -65,7 +65,7 @@ extension CastListOf on List<Json> {
 RequestBuilder get builder {
   return RequestBuilder(
     provider: DioProvider(),
-    // debugMode: true,
+    debugMode: true,
     endpoint: 'https://jsonplaceholder.typicode.com',
     interceptors: [
       // DebugInterceptor(),
