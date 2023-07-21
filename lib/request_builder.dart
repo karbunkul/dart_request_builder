@@ -5,3 +5,4 @@ export 'src/multipart_form.dart';
 export 'src/request_body.dart';
 export 'src/request_builder.dart';
 export 'src/request_provider.dart';
+export 'src/request_response.dart';
