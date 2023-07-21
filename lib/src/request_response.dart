@@ -22,4 +22,9 @@ final class RequestResponse {
       headers: headers ?? this.headers,
     );
   }
+
+  /// If request is successfully done
+  ///
+  /// https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+  bool get isSuccess => statusCode >= 200 && statusCode < 300;
 }
