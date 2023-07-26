@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:request_builder/src/request_context.dart';
 import 'package:request_builder/src/request_response.dart';

@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:request_builder/request_builder.dart';
-import 'package:request_builder/src/request_body.dart';
 
 import 'dio_provider.dart';
 
@@ -16,7 +15,8 @@ Future<void> main() async {
       .body(payload)
       .get('posts', timeout: Duration(milliseconds: 800));
 
-  final todos = res.toJsonList().listOf(TodoModel.fromJson);
+  // final todo = res.json.of(TodoModel.fromJson);
+  final todos = res.jsonList.of(TodoModel.fromJson);
   for (var e in todos) {
     print(e.title);
   }
@@ -52,23 +52,13 @@ class TodoModel {
 
 typedef Json = Map<String, dynamic>;
 
-typedef ImportCallback<T> = T Function(Json json);
-
-extension CastOf on Json {
-  T of<T>(ImportCallback<T> import) => import(this);
-}
-
-extension CastListOf on List<Json> {
-  List<T> listOf<T>(ImportCallback<T> import) => map(import).toList();
-}
-
 RequestBuilder get builder {
   return RequestBuilder(
     provider: DioProvider(),
     debugMode: true,
     endpoint: 'https://jsonplaceholder.typicode.com',
     interceptors: [
-      // DebugInterceptor(),
+      DebugInterceptor(headers: false),
     ],
   );
 }

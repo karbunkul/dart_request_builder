@@ -27,4 +27,6 @@ final class RequestResponse {
   ///
   /// https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
   bool get isSuccess => statusCode >= 200 && statusCode < 300;
+
+  bool get isFail => !isSuccess;
 }

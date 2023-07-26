@@ -1,8 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:request_builder/request_builder.dart';
-import 'package:request_builder/src/request_context.dart';
-import 'package:request_builder/src/request_response.dart';
-import 'package:request_builder/src/response_header.dart';
 
 class DioProvider implements RequestProvider {
   @override

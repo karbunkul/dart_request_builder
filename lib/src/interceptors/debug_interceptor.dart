@@ -2,6 +2,10 @@ part of '../interceptor.dart';
 
 final class DebugInterceptor
     implements RequestInterceptor, ResponseInterceptor {
+  final bool headers;
+
+  DebugInterceptor({this.headers = true});
+
   @override
   FutureOr<RequestContext> request(RequestContext context) {
     final message = '''
@@ -18,8 +22,10 @@ final class DebugInterceptor
     final message = '''
 == RESPONSE ==
 | Status code: ${response.statusCode};
-| Headers:
-|| ${response.headers.join('\n|| ')}
+${headers ? '| Headers:\n|| ${response.headers.join('\n|| ')}' : ''}
+| Response:
+
+${utf8.decode(response.bytes)}
 ''';
     print(message);
 

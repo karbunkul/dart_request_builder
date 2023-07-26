@@ -17,7 +17,11 @@ final class RequestContext {
     return RequestContext(
       method: method,
       uri: uri ?? this.uri,
-      headers: headers ?? this.headers,
+      headers: (headers ?? this.headers).map(
+        (key, value) {
+          return MapEntry(key.toLowerCase(), value);
+        },
+      ),
       body: body,
     );
   }

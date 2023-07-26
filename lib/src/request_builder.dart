@@ -76,7 +76,7 @@ class RequestBuilder {
     final context = RequestContext(
       method: method.toUpperCase(),
       uri: newUri,
-      headers: _headers,
+      headers: _headers.map((key, value) => MapEntry(key.toLowerCase(), value)),
       body: _body,
     );
 
@@ -129,5 +129,13 @@ class RequestBuilder {
 
   Future<RequestResponse> post(String url, {Duration? timeout}) async {
     return await request(method: 'POST', url: url, timeout: timeout);
+  }
+
+  Future<RequestResponse> put(String url, {Duration? timeout}) async {
+    return await request(method: 'PUT', url: url, timeout: timeout);
+  }
+
+  Future<RequestResponse> delete(String url, {Duration? timeout}) async {
+    return await request(method: 'DELETE', url: url, timeout: timeout);
   }
 }
