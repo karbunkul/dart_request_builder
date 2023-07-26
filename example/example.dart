@@ -58,7 +58,7 @@ RequestBuilder get builder {
     debugMode: true,
     endpoint: 'https://jsonplaceholder.typicode.com',
     interceptors: [
-      DebugInterceptor(headers: false),
+      // DebugInterceptor(headers: false),
     ],
   );
 }
