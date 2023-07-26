@@ -1,5 +1,6 @@
 library request_builder;
 
+export 'src/exceptions.dart';
 export 'src/extensions.dart';
 export 'src/interceptor.dart';
 export 'src/multipart_form.dart';
