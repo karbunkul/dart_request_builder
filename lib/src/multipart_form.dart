@@ -57,7 +57,7 @@ class _FormBody implements RequestBody {
   _FormBody(this.bytes, this.boundary);
 
   @override
-  Uint8List content() => bytes;
+  Future<Uint8List> content() async => bytes;
 
   @override
   String mimeType() => 'multipart/form-data; boundary=$boundary';

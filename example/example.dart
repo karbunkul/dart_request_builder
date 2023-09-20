@@ -15,8 +15,9 @@ Future<void> main() async {
       .body(payload)
       .get('posts', timeout: Duration(milliseconds: 800));
 
-  // final todo = res.json.of(TodoModel.fromJson);
-  final todos = res.jsonList.of(TodoModel.fromJson);
+  // final todo = await res.json.of(TodoModel.fromJson);
+  // print(todo);
+  final todos = await res.jsonList.of(TodoModel.fromJson);
   for (var e in todos) {
     print(e.title);
   }

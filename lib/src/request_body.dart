@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 abstract interface class RequestBody {
   String mimeType();
-  Uint8List content();
+  Future<Uint8List> content();
 }
 
 class JsonBody implements RequestBody {
@@ -15,7 +15,7 @@ class JsonBody implements RequestBody {
   String mimeType() => 'application/json; charset=utf-8';
 
   @override
-  Uint8List content() {
+  Future<Uint8List> content() async {
     return Uint8List.fromList(utf8.encode(jsonEncode(json)));
   }
 }
@@ -29,7 +29,7 @@ class TextBody implements RequestBody {
   String mimeType() => 'text/plain';
 
   @override
-  Uint8List content() {
+  Future<Uint8List> content() async {
     return Uint8List.fromList(utf8.encode(text));
   }
 }

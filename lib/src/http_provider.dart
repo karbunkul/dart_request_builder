@@ -14,7 +14,7 @@ class HttpProvider implements RequestProvider {
 
     if (context.body != null) {
       final body = context.body!;
-      request.bodyBytes = body.content();
+      request.bodyBytes = await body.content();
     }
 
     final res = await IOClient().send(request);

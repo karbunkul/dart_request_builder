@@ -8,7 +8,7 @@ class DioProvider implements RequestProvider {
 
     final response = await dio.requestUri(
       context.uri,
-      data: context.body?.content(),
+      data: await context.body?.content(),
       options: Options(
         headers: context.headers,
         method: context.method,
