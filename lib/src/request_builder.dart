@@ -1,6 +1,11 @@
+import 'dart:async';
+import 'dart:isolate';
+
 import 'package:request_builder/src/http_provider.dart';
+import 'package:request_builder/src/isolation_error.dart';
 import 'package:request_builder/src/request_body.dart';
 import 'package:request_builder/src/request_context.dart';
+import 'package:request_builder/src/types.dart';
 
 import 'interceptor.dart';
 import 'request_provider.dart';
@@ -89,7 +94,76 @@ class RequestBuilder {
     );
   }
 
-  Future<RequestResponse> request({
+  Future<RequestResponse> _isolationRequest({
+    required String method,
+    required String url,
+    required Duration timeout,
+  }) async {
+    final receivePort = ReceivePort(
+      debugLabel != null ? '$debugLabel (request isolate)' : '',
+    );
+    final isolate = await Isolate.spawn<SendPort>(
+      _onIsolate(method: method, url: url, timeout: timeout),
+      receivePort.sendPort,
+      onError: receivePort.sendPort,
+    );
+
+    final completer = Completer<RequestResponse>();
+    // listen receive port
+    receivePort.listen(
+      (message) {
+        if (message is IsolationError) {
+          completer.completeError(message.error, message.stackTrace);
+        } else {
+          completer.complete(message);
+        }
+        isolate.kill(priority: Isolate.immediate);
+        receivePort.close();
+      },
+    );
+
+    return completer.future;
+  }
+
+  IsolateEntryPointCallback _onIsolate({
+    required String method,
+    required String url,
+    required Duration timeout,
+  }) {
+    return (SendPort sendPort) async {
+      try {
+        final stopwatch = Stopwatch()..start();
+
+        var context = await _requestContext(method: method, url: url);
+        if (context.body != null) {
+          final headers = context.headers;
+          headers['content-type'] = context.body!.mimeType();
+          context = context.copyWith(headers: headers);
+        }
+
+        var response = await _provider.request(context).timeout(timeout);
+
+        Iterable<ResponseInterceptor> responseInterceptors =
+            interceptors?.whereType<ResponseInterceptor>() ?? [];
+
+        if (responseInterceptors.isNotEmpty) {
+          response = await responseInterceptors.fold(
+            response,
+            (prev, element) async => await element.response(await prev),
+          );
+        }
+
+        if (debugMode) {
+          print('Request time: ${stopwatch.elapsedMilliseconds} ms');
+        }
+        sendPort.send(response);
+      } catch (error, stackTrace) {
+        sendPort.send(IsolationError(error: error, stackTrace: stackTrace));
+      }
+    };
+  }
+
+  Future<RequestResponse> requestOld({
     required String method,
     required String url,
     Duration? timeout,
@@ -123,19 +197,33 @@ class RequestBuilder {
     return response;
   }
 
+  Future<RequestResponse> request({
+    required String method,
+    required String url,
+    Duration? timeout,
+  }) async {
+    final timeLimit = timeout ?? this.timeout;
+    return _isolationRequest(method: method, url: url, timeout: timeLimit);
+  }
+
   Future<RequestResponse> get(String url, {Duration? timeout}) async {
+    return await requestOld(method: 'GET', url: url, timeout: timeout);
+  }
+
+  Future<RequestResponse> getWithIsolate(String url,
+      {Duration? timeout}) async {
     return await request(method: 'GET', url: url, timeout: timeout);
   }
 
   Future<RequestResponse> post(String url, {Duration? timeout}) async {
-    return await request(method: 'POST', url: url, timeout: timeout);
+    return await requestOld(method: 'POST', url: url, timeout: timeout);
   }
 
   Future<RequestResponse> put(String url, {Duration? timeout}) async {
-    return await request(method: 'PUT', url: url, timeout: timeout);
+    return await requestOld(method: 'PUT', url: url, timeout: timeout);
   }
 
   Future<RequestResponse> delete(String url, {Duration? timeout}) async {
-    return await request(method: 'DELETE', url: url, timeout: timeout);
+    return await requestOld(method: 'DELETE', url: url, timeout: timeout);
   }
 }

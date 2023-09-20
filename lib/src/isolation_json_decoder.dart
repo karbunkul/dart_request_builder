@@ -2,9 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:isolate';
 
+import 'isolation_error.dart';
 import 'types.dart';
-
-typedef _EntryPointCallback = Function(SendPort sendPort);
 
 sealed class IsolationJsonDecoder {
   static Future<Json> fromBytes(List<int> source) async {
@@ -39,7 +38,7 @@ sealed class IsolationJsonDecoder {
 
     // listen receive port
     receivePort.listen((message) {
-      if (message is _IsolationError) {
+      if (message is IsolationError) {
         completer.completeError(message.error, message.stackTrace);
       } else {
         completer.complete(message);
@@ -52,7 +51,7 @@ sealed class IsolationJsonDecoder {
     return completer.future;
   }
 
-  static _EntryPointCallback _onIsolate(dynamic source) {
+  static IsolateEntryPointCallback _onIsolate(dynamic source) {
     return (SendPort sendPort) {
       try {
         if (source is String) {
@@ -67,15 +66,8 @@ sealed class IsolationJsonDecoder {
           sendPort.send(decoded);
         }
       } catch (e, st) {
-        sendPort.send(_IsolationError(error: e, stackTrace: st));
+        sendPort.send(IsolationError(error: e, stackTrace: st));
       }
     };
   }
-}
-
-final class _IsolationError {
-  final Object error;
-  final StackTrace stackTrace;
-
-  _IsolationError({required this.error, required this.stackTrace});
 }
