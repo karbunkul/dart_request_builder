@@ -226,4 +226,16 @@ class RequestBuilder {
   Future<RequestResponse> delete(String url, {Duration? timeout}) async {
     return await requestOld(method: 'DELETE', url: url, timeout: timeout);
   }
+
+  Future<RequestResponse> patch(String url, {Duration? timeout}) async {
+    return await requestOld(method: 'PATCH', url: url, timeout: timeout);
+  }
+
+  Future<RequestResponse> head(String url, {Duration? timeout}) async {
+    return await requestOld(method: 'HEAD', url: url, timeout: timeout);
+  }
+
+  Future<RequestResponse> options(String url, {Duration? timeout}) async {
+    return await requestOld(method: 'OPTIONS', url: url, timeout: timeout);
+  }
 }

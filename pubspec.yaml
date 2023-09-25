@@ -6,11 +6,12 @@ environment:
   sdk: ^3.0.5
 
 dependencies:
-
+  meta: ^1.9.1
   http: ^0.13.4
   json_path: ^0.6.1
   logging: ^1.2.0
 
 dev_dependencies:
+  benchmark_harness: ^2.2.2
   lints: ^2.0.0
   test: ^1.21.0
