@@ -39,8 +39,10 @@ class RequestBuilder {
     return this;
   }
 
-  RequestBuilder query(String query, Object value) {
-    _queries.putIfAbsent(query, () => value.toString());
+  RequestBuilder query(String query, Object? value) {
+    if (value != null) {
+      _queries.putIfAbsent(query, () => value.toString());
+    }
     return this;
   }
 
