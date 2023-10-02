@@ -19,7 +19,7 @@ final class CurlInterceptor extends RequestInterceptor {
 
     for (final header in context.headers.keys) {
       final value = context.headers[header];
-      curl += '--header \'$header: $value\'';
+      curl += '--header \'$header: $value\' ';
     }
 
     if (context.hasBody) {
