@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:isolate';
 
 import 'package:request_builder/src/http_provider.dart';
@@ -80,6 +81,10 @@ class RequestBuilder {
       );
     }
 
+    if (_body != null) {
+      _headers[HttpHeaders.contentTypeHeader] = _body!.mimeType();
+    }
+
     final context = RequestContext(
       method: method.toUpperCase(),
       uri: newUri,
@@ -87,8 +92,10 @@ class RequestBuilder {
       body: _body,
     );
 
-    Iterable<RequestInterceptor> requestInterceptors =
-        interceptors?.whereType<RequestInterceptor>() ?? [];
+    final requestInterceptors =
+        interceptors?.whereType<RequestInterceptor>().toList(growable: false) ??
+            [];
+    requestInterceptors.sort();
 
     return requestInterceptors.fold(
       context,
@@ -137,7 +144,7 @@ class RequestBuilder {
         final stopwatch = Stopwatch()..start();
 
         var context = await _requestContext(method: method, url: url);
-        if (context.body != null) {
+        if (context.hasBody) {
           final headers = context.headers;
           headers['content-type'] = context.body!.mimeType();
           context = context.copyWith(headers: headers);
@@ -145,10 +152,13 @@ class RequestBuilder {
 
         var response = await _provider.request(context).timeout(timeout);
 
-        Iterable<ResponseInterceptor> responseInterceptors =
-            interceptors?.whereType<ResponseInterceptor>() ?? [];
+        final responseInterceptors = interceptors
+                ?.whereType<ResponseInterceptor>()
+                .toList(growable: false) ??
+            [];
 
         if (responseInterceptors.isNotEmpty) {
+          responseInterceptors.sort();
           response = await responseInterceptors.fold(
             response,
             (prev, element) async => await element.response(await prev),
@@ -173,7 +183,7 @@ class RequestBuilder {
     final stopwatch = Stopwatch()..start();
 
     var context = await _requestContext(method: method, url: url);
-    if (context.body != null) {
+    if (context.hasBody) {
       final headers = context.headers;
       headers['content-type'] = context.body!.mimeType();
       context = context.copyWith(headers: headers);
@@ -182,10 +192,13 @@ class RequestBuilder {
 
     var response = await _provider.request(context).timeout(timeLimit);
 
-    Iterable<ResponseInterceptor> responseInterceptors =
-        interceptors?.whereType<ResponseInterceptor>() ?? [];
+    final responseInterceptors = interceptors
+            ?.whereType<ResponseInterceptor>()
+            .toList(growable: false) ??
+        [];
 
     if (responseInterceptors.isNotEmpty) {
+      responseInterceptors.sort();
       response = await responseInterceptors.fold(
         response,
         (prev, element) async => await element.response(await prev),

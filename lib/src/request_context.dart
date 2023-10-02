@@ -26,6 +26,8 @@ final class RequestContext {
     );
   }
 
+  bool get hasBody => body != null;
+
   @override
   String toString() {
     return "(method=$method, uri=$uri, headers=$headers)";

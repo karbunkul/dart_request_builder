@@ -50,7 +50,7 @@ class MultipartForm {
   }
 }
 
-class _FormBody implements RequestBody {
+final class _FormBody extends RequestBody {
   final Uint8List bytes;
   final String boundary;
 
@@ -61,6 +61,9 @@ class _FormBody implements RequestBody {
 
   @override
   String mimeType() => 'multipart/form-data; boundary=$boundary';
+
+  @override
+  BodySourceType get sourceType => BodySourceType.binary;
 }
 
 class _MultipartFile {

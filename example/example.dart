@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:request_builder/request_builder.dart';
@@ -59,7 +60,8 @@ RequestBuilder get builder {
     debugMode: true,
     endpoint: 'https://jsonplaceholder.typicode.com',
     interceptors: [
-      // DebugInterceptor(headers: false),
+      CurlInterceptor(onCurl: print),
+      DebugInterceptor(headers: false, weight: 0),
     ],
   );
 }

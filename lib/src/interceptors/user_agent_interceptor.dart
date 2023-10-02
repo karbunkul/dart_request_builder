@@ -1,6 +1,6 @@
 part of '../interceptor.dart';
 
-final class UserAgentInterceptor implements RequestInterceptor {
+final class UserAgentInterceptor extends RequestInterceptor {
   final String userAgent;
 
   UserAgentInterceptor(this.userAgent);

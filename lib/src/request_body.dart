@@ -1,12 +1,17 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-abstract interface class RequestBody {
+enum BodySourceType { string, binary }
+
+abstract base class RequestBody {
+  const RequestBody();
   String mimeType();
   Future<Uint8List> content();
+
+  BodySourceType get sourceType => BodySourceType.string;
 }
 
-class JsonBody implements RequestBody {
+final class JsonBody extends RequestBody {
   final Map<String, dynamic> json;
 
   const JsonBody(this.json);
@@ -20,7 +25,7 @@ class JsonBody implements RequestBody {
   }
 }
 
-class TextBody implements RequestBody {
+final class TextBody extends RequestBody {
   final String text;
 
   const TextBody(this.text);

@@ -1,21 +1,9 @@
 part of '../interceptor.dart';
 
-final class DebugInterceptor
-    implements RequestInterceptor, ResponseInterceptor {
+final class DebugInterceptor extends ResponseInterceptor {
   final bool headers;
 
-  DebugInterceptor({this.headers = true});
-
-  @override
-  FutureOr<RequestContext> request(RequestContext context) {
-    final message = '''
-== REQUEST ==
-| Method: ${context.method};
-| Uri: ${context.uri}
-''';
-    print(message);
-    return context;
-  }
+  DebugInterceptor({this.headers = true, super.weight});
 
   @override
   FutureOr<RequestResponse> response(RequestResponse response) {
