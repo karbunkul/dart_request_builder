@@ -15,13 +15,13 @@ import 'request_response.dart';
 class RequestBuilder {
   final String? endpoint;
   final String? debugLabel;
-  final Duration timeout;
+  final Duration? timeout;
   final bool debugMode;
   final List<Interceptor>? interceptors;
   late final RequestProvider _provider;
 
   RequestBuilder({
-    this.timeout = const Duration(seconds: 1),
+    this.timeout,
     this.debugMode = false,
     this.endpoint,
     this.debugLabel,
@@ -106,7 +106,7 @@ class RequestBuilder {
   Future<RequestResponse> _isolationRequest({
     required String method,
     required String url,
-    required Duration timeout,
+    Duration? timeout,
   }) async {
     final receivePort = ReceivePort(
       debugLabel != null ? '$debugLabel (request isolate)' : '',
@@ -137,7 +137,7 @@ class RequestBuilder {
   IsolateEntryPointCallback _onIsolate({
     required String method,
     required String url,
-    required Duration timeout,
+    Duration? timeout,
   }) {
     return (SendPort sendPort) async {
       try {
@@ -150,7 +150,9 @@ class RequestBuilder {
           context = context.copyWith(headers: headers);
         }
 
-        var response = await _provider.request(context).timeout(timeout);
+        var response = (timeout != null)
+            ? await _provider.request(context).timeout(timeout)
+            : await _provider.request(context);
 
         final responseInterceptors = interceptors
                 ?.whereType<ResponseInterceptor>()
@@ -190,7 +192,9 @@ class RequestBuilder {
     }
     final timeLimit = timeout ?? this.timeout;
 
-    var response = await _provider.request(context).timeout(timeLimit);
+    var response = (timeLimit != null)
+        ? await _provider.request(context).timeout(timeLimit)
+        : await _provider.request(context);
 
     final responseInterceptors = interceptors
             ?.whereType<ResponseInterceptor>()
