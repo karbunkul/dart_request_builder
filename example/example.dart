@@ -61,7 +61,6 @@ RequestBuilder get builder {
     endpoint: 'https://jsonplaceholder.typicode.com',
     interceptors: [
       CurlInterceptor(onCurl: print),
-      DebugInterceptor(headers: false, weight: 0),
     ],
   );
 }

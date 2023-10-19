@@ -5,7 +5,7 @@ import 'package:logging/logging.dart';
 import 'package:request_builder/request_builder.dart';
 
 part 'interceptors/curl_interceptor.dart';
-part 'interceptors/debug_interceptor.dart';
+// part 'interceptors/debug_interceptor.dart';
 part 'interceptors/user_agent_interceptor.dart';
 
 abstract interface class Interceptor {
