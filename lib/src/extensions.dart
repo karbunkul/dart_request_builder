@@ -43,8 +43,6 @@ extension RequestResponseExt on RequestResponse {
     }
     return utf8.decode(bytes);
   }
-
-  BaseResponse toHttpResponse() => _HttpResponse(response: this);
 }
 
 extension CastOf on Json {
@@ -86,42 +84,4 @@ extension AsyncCastListOf on Future<List<Json>> {
       throw Error.throwWithStackTrace(JsonImportError(), stackTrace);
     }
   }
-}
-
-final class _HttpResponse implements BaseResponse {
-  final RequestResponse response;
-
-  const _HttpResponse({required this.response});
-
-  String get body => utf8.decode(bodyBytes);
-
-  Uint8List get bodyBytes => response.bytes;
-
-  @override
-  Map<String, String> get headers {
-    final headers = <String, String>{};
-    for (final header in response.headers) {
-      headers.putIfAbsent(header.name, () => header.value);
-    }
-
-    return headers;
-  }
-
-  @override
-  bool get isRedirect => false;
-
-  @override
-  String? get reasonPhrase => null;
-
-  @override
-  BaseRequest? get request => null;
-
-  @override
-  int get statusCode => response.statusCode;
-
-  @override
-  int? get contentLength => bodyBytes.length;
-
-  @override
-  bool get persistentConnection => true;
 }
