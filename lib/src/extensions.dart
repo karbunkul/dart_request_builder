@@ -44,9 +44,7 @@ extension RequestResponseExt on RequestResponse {
     return utf8.decode(bytes);
   }
 
-  BaseResponse toHttpRequest() {
-    return _HttpResponse(response: this);
-  }
+  BaseResponse toHttpResponse() => _HttpResponse(response: this);
 }
 
 extension CastOf on Json {
