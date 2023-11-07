@@ -25,6 +25,7 @@ class HttpProvider implements RequestProvider {
     });
 
     return RequestResponse(
+      request: context,
       statusCode: res.statusCode,
       bytes: await res.stream.toBytes(),
       headers: headers,

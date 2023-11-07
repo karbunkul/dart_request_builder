@@ -1,12 +1,14 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
+import 'package:http/http.dart';
 import 'package:request_builder/src/exceptions.dart';
 import 'package:request_builder/src/isolation_json_decoder.dart';
 
 import 'request_response.dart';
 import 'types.dart';
 
-extension BytesTo on RequestResponse {
+extension RequestResponseExt on RequestResponse {
   Future<Json> get json async {
     if (bytes.isEmpty) {
       return {};
@@ -40,6 +42,10 @@ extension BytesTo on RequestResponse {
       return '';
     }
     return utf8.decode(bytes);
+  }
+
+  BaseResponse toHttpRequest() {
+    return _HttpResponse(response: this);
   }
 }
 
@@ -82,4 +88,42 @@ extension AsyncCastListOf on Future<List<Json>> {
       throw Error.throwWithStackTrace(JsonImportError(), stackTrace);
     }
   }
+}
+
+final class _HttpResponse implements BaseResponse {
+  final RequestResponse response;
+
+  const _HttpResponse({required this.response});
+
+  String get body => utf8.decode(bodyBytes);
+
+  Uint8List get bodyBytes => response.bytes;
+
+  @override
+  Map<String, String> get headers {
+    final headers = <String, String>{};
+    for (final header in response.headers) {
+      headers.putIfAbsent(header.name, () => header.value);
+    }
+
+    return headers;
+  }
+
+  @override
+  bool get isRedirect => false;
+
+  @override
+  String? get reasonPhrase => null;
+
+  @override
+  BaseRequest? get request => null;
+
+  @override
+  int get statusCode => response.statusCode;
+
+  @override
+  int? get contentLength => bodyBytes.length;
+
+  @override
+  bool get persistentConnection => true;
 }

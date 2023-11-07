@@ -1,6 +1,6 @@
 name: request_builder
 description: A starting point for Dart libraries or applications.
-version: 1.0.2+5
+version: 1.0.3+6
 
 environment:
   sdk: ^3.0.5

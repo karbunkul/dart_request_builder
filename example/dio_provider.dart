@@ -23,6 +23,7 @@ class DioProvider implements RequestProvider {
     });
 
     return RequestResponse(
+      request: context,
       statusCode: response.statusCode!,
       bytes: response.data,
       headers: headers,
