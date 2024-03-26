@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
-import 'package:http/http.dart';
 import 'package:request_builder/src/exceptions.dart';
 import 'package:request_builder/src/isolation_json_decoder.dart';
 

@@ -30,7 +30,7 @@ class RequestBuilder {
   }) : _provider = provider ?? HttpProvider();
 
   final _headers = <String, String>{};
-  final _queries = <String, String>{};
+  final _queries = <String, Set<String>>{};
   RequestBody? _body;
 
   RequestBuilder header({required String header, required String value}) {
@@ -40,10 +40,29 @@ class RequestBuilder {
     return this;
   }
 
-  RequestBuilder query(String query, Object? value) {
-    if (value != null) {
-      _queries.putIfAbsent(query, () => value.toString());
+  /// Added query parameter by [key].
+  ///
+  /// If [value] == null, then addition will be skipped.
+  /// Else for value, method [toString] will be called.
+  ///
+  /// If [key] already exists and [value] has not been added. This will add this [value],
+  /// which will be parsed as:
+  ///
+  /// `?key=value1&key=value2`
+  ///
+  /// If [value] already exists, then addition for the new value will be skipped.
+  /// (Works under the hood [Set])
+  RequestBuilder query(String key, Object? value) {
+    if (value == null) {
+      return this;
     }
+
+    if (_queries.containsKey(key)) {
+      _queries[key]!.add(value.toString());
+    } else {
+      _queries[key] = {value.toString()};
+    }
+
     return this;
   }
 
@@ -77,7 +96,12 @@ class RequestBuilder {
     Uri newUri = _uri(url);
     if (newUri.hasQuery || _queries.isNotEmpty) {
       newUri = newUri.replace(
-        queryParameters: _queries..addAll(newUri.queryParameters),
+        queryParameters: _queries
+          ..addAll(
+            newUri.queryParametersAll.map(
+              (key, value) => MapEntry(key, value.toSet()),
+            ),
+          ),
       );
     }
 
