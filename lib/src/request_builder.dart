@@ -66,6 +66,27 @@ class RequestBuilder {
     return this;
   }
 
+  /// Added query [values] parameter by [key].
+  ///
+  /// If [key] already exists, then will be added new [values].
+  ///
+  /// Example:
+  ///
+  /// `?key=value1&key=value2`
+  RequestBuilder queryList(String key, Set<Object>? values) {
+    if (values == null) {
+      return this;
+    }
+
+    if (_queries.containsKey(key)) {
+      _queries[key]!.addAll(values.map((e) => e.toString()));
+    } else {
+      _queries[key] = values.map((e) => e.toString()).toSet();
+    }
+
+    return this;
+  }
+
   RequestBuilder body(RequestBody body) {
     _body = body;
     return this;
