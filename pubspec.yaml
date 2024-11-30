@@ -1,6 +1,6 @@
 name: request_builder
 description: Easy to make http/https requests for RESTful 
-version: 1.0.5+8
+version: 1.0.6+9
 
 environment:
   sdk: ^3.0.5
