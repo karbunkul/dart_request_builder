@@ -49,7 +49,7 @@ final class ResponseHeader {
   }
 
   @override
-  int get hashCode => Object.hash(_name, _values);
+  int get hashCode => Object.hash(_name, value);
 
   @override
   bool operator ==(Object other) =>
@@ -57,7 +57,7 @@ final class ResponseHeader {
       other is ResponseHeader &&
           runtimeType == other.runtimeType &&
           _name == other._name &&
-          _values == other._values;
+          value == other.value;
 
   @override
   String toString() => '(name=$name value=$value)';
