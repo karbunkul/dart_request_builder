@@ -3,8 +3,6 @@ import 'dart:convert';
 
 import 'package:request_builder/request_builder.dart';
 
-import 'dio_provider.dart';
-
 Future<void> main() async {
   final payload = JsonBody({
     'title': 'foo bar',
@@ -56,7 +54,8 @@ typedef Json = Map<String, dynamic>;
 
 RequestBuilder get builder {
   return RequestBuilder(
-    provider: DioProvider(),
+    provider: HttpProvider(proxyOptions: ProxyOptions(port: 8080)),
+    // provider: DioProvider(),
     debugMode: true,
     endpoint: 'https://jsonplaceholder.typicode.com',
     interceptors: [
