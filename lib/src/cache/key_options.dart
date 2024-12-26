@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
@@ -20,16 +21,16 @@ enum _CacheKeyType {
 final class CacheKeyOptions {
   final Set<String>? _queries;
   final Set<String>? _headers;
-  final bool withBody;
+  final bool? withBody;
 
   CacheKeyOptions({
     List<String>? queries,
     List<String>? headers,
-    required this.withBody,
+    this.withBody,
   })  : _queries = queries?.map((e) => e.toLowerCase()).toSet(),
         _headers = headers?.map((e) => e.toLowerCase()).toSet();
 
-  String buildKey(RequestContext context) {
+  FutureOr<String> buildKey(RequestContext context) async {
     final strHeaders = _pairs(
       context.headers,
       _CacheKeyType.header,
@@ -40,7 +41,17 @@ final class CacheKeyOptions {
       _CacheKeyType.query,
     ).join(',');
 
-    return _hashKey('$strQueries;$strHeaders');
+    final httpMethod = context.method;
+    final url = context.uri.toString();
+
+    var str = 'm-$httpMethod;u-$url;$strQueries;$strHeaders';
+
+    if (context.hasBody && (withBody == null || withBody == true)) {
+      final body = base64.encode(await context.body!.content());
+      str = '$str;${_CacheKeyType.body.id}-$body';
+    }
+
+    return _hashKey(str);
   }
 
   Iterable<String> _pairs(Map<String, String> value, _CacheKeyType type) {

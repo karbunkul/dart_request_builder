@@ -23,8 +23,8 @@ Future<void> requestTodos() async {
   });
 
   final res = await builder
-      .body(payload)
-      .withCache(ttl: Duration(seconds: 2), storage: storage)
+      // .body(payload)
+      .withCache(ttl: Duration(seconds: 6), storage: storage)
       .get('posts');
 
   // final todos = await res.jsonList.of(TodoModel.fromJson);

@@ -17,7 +17,7 @@ final class CacheManager {
 
   final List<String>? keyQueries;
   final List<String>? keyHeaders;
-  final bool withBody;
+  final bool? withBody;
 
   /// Creates a new [CacheManager] with the specified [ttl] and [storage].
   const CacheManager({
@@ -25,11 +25,11 @@ final class CacheManager {
     required this.storage,
     this.keyQueries,
     this.keyHeaders,
-    this.withBody = false,
+    this.withBody,
   });
 
   Future<CacheData?> validate(RequestContext context) async {
-    final key = CacheKeyOptions(
+    final key = await CacheKeyOptions(
       withBody: withBody,
       headers: keyHeaders,
       queries: keyQueries,
@@ -56,7 +56,7 @@ final class CacheManager {
   /// stores the response data (headers, content, and status code) if valid.
   Future<void> update(RequestResponse response) async {
     // Build the cache key based on the request's body, headers, and query parameters
-    final key = CacheKeyOptions(
+    final key = await CacheKeyOptions(
       withBody: withBody,
       headers: keyHeaders,
       queries: keyQueries,
