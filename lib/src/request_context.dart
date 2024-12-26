@@ -24,6 +24,8 @@ final class RequestContext {
     );
   }
 
+  bool hasHeader(String header) => headers.containsKey(header);
+
   bool get hasBody => body != null;
 
   @override

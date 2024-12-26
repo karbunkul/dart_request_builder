@@ -3,7 +3,19 @@ import 'dart:convert';
 
 import 'package:request_builder/request_builder.dart';
 
+import 'memory_cache_storage.dart';
+
+final storage = MemoryCacheStorage();
+
 Future<void> main() async {
+  await requestTodos();
+  await requestTodos();
+  print('wait two seconds');
+  await Future.delayed(Duration(seconds: 2), () => null);
+  await requestTodos();
+}
+
+Future<void> requestTodos() async {
   final payload = JsonBody({
     'title': 'foo bar',
     'body': 'baz',
@@ -12,14 +24,12 @@ Future<void> main() async {
 
   final res = await builder
       .body(payload)
-      .get('posts', timeout: Duration(milliseconds: 800));
+      .withCache(ttl: Duration(seconds: 2), storage: storage)
+      .get('posts');
 
-  // final todo = await res.json.of(TodoModel.fromJson);
-  // print(todo);
-  final todos = await res.jsonList.of(TodoModel.fromJson);
-  for (var e in todos) {
-    print(e.title);
-  }
+  // final todos = await res.jsonList.of(TodoModel.fromJson);
+
+  // print((await res.text).substring(0, 100));
 }
 
 class TodoModel {
@@ -54,7 +64,7 @@ typedef Json = Map<String, dynamic>;
 
 RequestBuilder get builder {
   return RequestBuilder(
-    provider: HttpProvider(proxyOptions: ProxyOptions(port: 8080)),
+    // provider: HttpProvider(proxyOptions: ProxyOptions(port: 8080)),
     // provider: DioProvider(),
     debugMode: true,
     endpoint: 'https://jsonplaceholder.typicode.com',

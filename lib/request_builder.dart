@@ -1,5 +1,6 @@
 library request_builder;
 
+export 'src/cache/cache.dart';
 export 'src/exceptions.dart';
 export 'src/extensions.dart';
 export 'src/http_provider.dart';

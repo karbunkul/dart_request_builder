@@ -2,20 +2,22 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:request_builder/src/http_provider.dart';
-import 'package:request_builder/src/isolation_error.dart';
-import 'package:request_builder/src/request_body.dart';
-import 'package:request_builder/src/request_context.dart';
-import 'package:request_builder/src/types.dart';
-
+import 'cache/cache_manager.dart';
+import 'cache/storage.dart';
+import 'http_provider.dart';
 import 'interceptor.dart';
+import 'isolation_error.dart';
+import 'request_body.dart';
+import 'request_context.dart';
 import 'request_provider.dart';
 import 'request_response.dart';
+import 'types.dart';
 
 class RequestBuilder {
   final String? endpoint;
   final String? debugLabel;
   final Duration? timeout;
+
   final bool debugMode;
   final List<Interceptor>? interceptors;
   late final RequestProvider _provider;
@@ -32,11 +34,27 @@ class RequestBuilder {
   final _headers = <String, String>{};
   final _queries = <String, Set<String>>{};
   RequestBody? _body;
+  CacheManager? _cacheOptions;
 
   RequestBuilder header({required String header, required String value}) {
     final key = header.toLowerCase();
 
     _headers.putIfAbsent(key, () => value);
+    return this;
+  }
+
+  /// Adds caching functionality to the request builder.
+  ///
+  /// [ttl] - The time-to-live (TTL) duration for the cache.
+  /// [storage] - The storage solution used to persist cached data.
+  RequestBuilder withCache({
+    required Duration ttl,
+    required CacheStorage storage,
+  }) {
+    // Assigns the provided TTL and storage to the cache options.
+    _cacheOptions = CacheManager(ttl: ttl, storage: storage);
+
+    // Returns the updated RequestBuilder instance with cache options.
     return this;
   }
 
@@ -87,8 +105,14 @@ class RequestBuilder {
     return this;
   }
 
+  /// Sets the body of the request.
+  ///
+  /// [body] - The request body to be sent with the request.
   RequestBuilder body(RequestBody body) {
+    // Assigns the provided body to the _body field.
     _body = body;
+
+    // Returns the updated RequestBuilder instance with the body set.
     return this;
   }
 
@@ -229,17 +253,27 @@ class RequestBuilder {
   }) async {
     final stopwatch = Stopwatch()..start();
 
+    /// build request context with request interceptors
     var context = await _requestContext(method: method, url: url);
-    if (context.hasBody) {
-      final headers = context.headers;
-      headers['content-type'] = context.body!.mimeType();
-      context = context.copyWith(headers: headers);
-    }
+
     final timeLimit = timeout ?? this.timeout;
 
-    var response = (timeLimit != null)
-        ? await _provider.request(context).timeout(timeLimit)
-        : await _provider.request(context);
+    /// cache validate
+    final cached = await _cacheOptions?.validate(context);
+
+    RequestResponse response;
+    if (cached != null) {
+      response = RequestResponse(
+        request: context,
+        statusCode: cached.statusCode,
+        bytes: cached.content,
+        headers: [],
+      );
+    } else {
+      response = (timeLimit != null)
+          ? await _provider.request(context).timeout(timeLimit)
+          : await _provider.request(context);
+    }
 
     final responseInterceptors = interceptors
             ?.whereType<ResponseInterceptor>()
@@ -256,6 +290,10 @@ class RequestBuilder {
 
     if (debugMode) {
       print('Request time: ${stopwatch.elapsedMilliseconds} ms');
+    }
+
+    if (response.statusCode == 200 && cached == null) {
+      await _cacheOptions?.update(response);
     }
 
     return response;
