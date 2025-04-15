@@ -5,8 +5,9 @@ import 'package:http/io_client.dart';
 import 'package:request_builder/src/request_context.dart';
 import 'package:request_builder/src/request_provider.dart';
 import 'package:request_builder/src/request_response.dart';
+import 'package:request_builder/src/types.dart';
 
-import 'response_header.dart';
+import '../response_header.dart';
 
 class HttpProvider implements RequestProvider {
   final ProxyOptions? proxyOptions;
@@ -15,7 +16,7 @@ class HttpProvider implements RequestProvider {
 
   @override
   Future<RequestResponse> request(RequestContext context) async {
-    final client = await _createHttpClient();
+    final client = await _createHttpClient(context.platform);
 
     final request = http.Request(context.method, context.uri);
     request.headers.addAll(context.headers);
@@ -40,7 +41,11 @@ class HttpProvider implements RequestProvider {
     );
   }
 
-  Future<http.Client> _createHttpClient() async {
+  Future<http.Client> _createHttpClient(PlatformType platform) async {
+    if (platform == PlatformType.web) {
+      return http.Client();
+    }
+
     final httpClient = HttpClient();
 
     if (proxyOptions != null) {

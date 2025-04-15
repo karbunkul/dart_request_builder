@@ -4,9 +4,9 @@ import 'dart:isolate';
 
 import 'cache/cache_manager.dart';
 import 'cache/storage.dart';
-import 'http_provider.dart';
 import 'interceptor.dart';
 import 'isolation_error.dart';
+import 'providers/http_provider.dart';
 import 'request_body.dart';
 import 'request_context.dart';
 import 'request_provider.dart';
@@ -17,19 +17,21 @@ class RequestBuilder {
   final String? endpoint;
   final String? debugLabel;
   final Duration? timeout;
+  final PlatformType platform;
 
   final bool debugMode;
   final List<Interceptor>? interceptors;
-  late final RequestProvider _provider;
+  final RequestProvider _provider;
 
   RequestBuilder({
+    required this.platform,
     this.timeout,
     this.debugMode = false,
     this.endpoint,
     this.debugLabel,
     this.interceptors,
     RequestProvider? provider,
-  }) : _provider = provider ?? HttpProvider();
+  }) : _provider = provider ?? const HttpProvider();
 
   final _headers = <String, String>{};
   final _queries = <String, Set<String>>{};
@@ -155,6 +157,7 @@ class RequestBuilder {
     }
 
     final context = RequestContext(
+      platform: platform,
       method: method.toUpperCase(),
       uri: newUri,
       headers: _headers.map((key, value) => MapEntry(key.toLowerCase(), value)),

@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:request_builder/request_builder.dart';
 
+import 'dio_provider.dart';
 import 'memory_cache_storage.dart';
 
 final storage = MemoryCacheStorage();
@@ -64,8 +65,12 @@ typedef Json = Map<String, dynamic>;
 
 RequestBuilder get builder {
   return RequestBuilder(
+    platform: PlatformType.mac,
     // provider: HttpProvider(proxyOptions: ProxyOptions(port: 8080)),
-    // provider: DioProvider(),
+    provider: NetworkBandwidthProvider(
+      provider: DioProvider(),
+      bandwidth: BandwidthType.none,
+    ),
     debugMode: true,
     endpoint: 'https://jsonplaceholder.typicode.com',
     interceptors: [
