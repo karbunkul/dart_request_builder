@@ -1,5 +1,8 @@
 import 'dart:isolate';
 
+import 'package:meta/meta.dart';
+
+@internal
 typedef Json = Map<String, dynamic>;
 typedef ImportCallback<T> = T Function(Json json);
 typedef IsolateEntryPointCallback = Function(SendPort sendPort);

@@ -13,4 +13,4 @@ export 'src/request_context.dart';
 export 'src/request_provider.dart';
 export 'src/request_response.dart';
 export 'src/response_header.dart';
-export 'src/types.dart';
+export 'src/types.dart' hide Json;
