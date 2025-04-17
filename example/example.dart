@@ -65,7 +65,7 @@ typedef Json = Map<String, dynamic>;
 
 RequestBuilder get builder {
   return RequestBuilder(
-    platform: PlatformType.mac,
+    platform: PlatformType.web,
     // provider: HttpProvider(proxyOptions: ProxyOptions(port: 8080)),
     provider: NetworkBandwidthProvider(
       provider: DioProvider(),

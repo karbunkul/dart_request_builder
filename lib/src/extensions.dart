@@ -12,6 +12,11 @@ extension RequestResponseExt on RequestResponse {
       return {};
     }
     try {
+      if (request.platform == PlatformType.web) {
+        final str = utf8.decode(bytes);
+        return jsonDecode(str);
+      }
+
       return IsolationJsonDecoder.fromBytes(bytes);
     } on FormatException catch (err, stackTrace) {
       throw Error.throwWithStackTrace(
@@ -26,6 +31,12 @@ extension RequestResponseExt on RequestResponse {
       return [];
     }
     try {
+      if (request.platform == PlatformType.web) {
+        final str = utf8.decode(bytes);
+
+        return (jsonDecode(str) as List).cast<Json>();
+      }
+
       return IsolationJsonDecoder.listFromBytes(bytes);
     } on FormatException catch (err, stackTrace) {
       throw Error.throwWithStackTrace(
