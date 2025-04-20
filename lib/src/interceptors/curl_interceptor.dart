@@ -5,7 +5,7 @@ typedef CurlCallback = void Function(String curl);
 final class CurlInterceptor extends RequestInterceptor {
   final CurlCallback? onCurl;
 
-  CurlInterceptor({this.onCurl, super.weight = -999999999999999999});
+  CurlInterceptor({this.onCurl, super.weight = -10000});
 
   @override
   FutureOr<RequestContext> request(RequestContext context) async {

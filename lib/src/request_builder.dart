@@ -4,9 +4,9 @@ import 'dart:isolate';
 
 import 'cache/cache_manager.dart';
 import 'cache/storage.dart';
-import 'http_provider.dart';
 import 'interceptor.dart';
 import 'isolation_error.dart';
+import 'providers/http_provider.dart';
 import 'request_body.dart';
 import 'request_context.dart';
 import 'request_provider.dart';
@@ -17,19 +17,21 @@ class RequestBuilder {
   final String? endpoint;
   final String? debugLabel;
   final Duration? timeout;
+  final PlatformType platform;
 
   final bool debugMode;
   final List<Interceptor>? interceptors;
-  late final RequestProvider _provider;
+  final RequestProvider _provider;
 
   RequestBuilder({
+    required this.platform,
     this.timeout,
     this.debugMode = false,
     this.endpoint,
     this.debugLabel,
     this.interceptors,
     RequestProvider? provider,
-  }) : _provider = provider ?? HttpProvider();
+  }) : _provider = provider ?? const HttpProvider();
 
   final _headers = <String, String>{};
   final _queries = <String, Set<String>>{};
@@ -154,12 +156,19 @@ class RequestBuilder {
       _headers[HttpHeaders.contentTypeHeader] = _body!.mimeType();
     }
 
-    final context = RequestContext(
+    var context = RequestContext(
       method: method.toUpperCase(),
       uri: newUri,
       headers: _headers.map((key, value) => MapEntry(key.toLowerCase(), value)),
       body: _body,
+      platform: platform,
     );
+
+    if (context.hasBody) {
+      final headers = context.headers;
+      headers['content-type'] = context.body!.mimeType();
+      context = context.copyWith(headers: headers);
+    }
 
     final requestInterceptors =
         interceptors?.whereType<RequestInterceptor>().toList(growable: false) ??
@@ -212,12 +221,7 @@ class RequestBuilder {
       try {
         final stopwatch = Stopwatch()..start();
 
-        var context = await _requestContext(method: method, url: url);
-        if (context.hasBody) {
-          final headers = context.headers;
-          headers['content-type'] = context.body!.mimeType();
-          context = context.copyWith(headers: headers);
-        }
+        final context = await _requestContext(method: method, url: url);
 
         var response = (timeout != null)
             ? await _provider.request(context).timeout(timeout)
