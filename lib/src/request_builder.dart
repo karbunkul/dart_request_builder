@@ -156,13 +156,19 @@ class RequestBuilder {
       _headers[HttpHeaders.contentTypeHeader] = _body!.mimeType();
     }
 
-    final context = RequestContext(
-      platform: platform,
+    var context = RequestContext(
       method: method.toUpperCase(),
       uri: newUri,
       headers: _headers.map((key, value) => MapEntry(key.toLowerCase(), value)),
       body: _body,
+      platform: platform,
     );
+
+    if (context.hasBody) {
+      final headers = context.headers;
+      headers['content-type'] = context.body!.mimeType();
+      context = context.copyWith(headers: headers);
+    }
 
     final requestInterceptors =
         interceptors?.whereType<RequestInterceptor>().toList(growable: false) ??
@@ -215,12 +221,7 @@ class RequestBuilder {
       try {
         final stopwatch = Stopwatch()..start();
 
-        var context = await _requestContext(method: method, url: url);
-        if (context.hasBody) {
-          final headers = context.headers;
-          headers['content-type'] = context.body!.mimeType();
-          context = context.copyWith(headers: headers);
-        }
+        final context = await _requestContext(method: method, url: url);
 
         var response = (timeout != null)
             ? await _provider.request(context).timeout(timeout)
