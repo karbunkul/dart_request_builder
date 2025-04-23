@@ -124,9 +124,9 @@ class RequestBuilder {
       return Uri.parse(url);
     }
 
-    final cleanEndpoint = endpoint!.endsWith('/')
+    final cleanEndpoint = endpoint?.endsWith('/') == true
         ? endpoint!.substring(0, endpoint!.length - 1)
-        : endpoint!;
+        : endpoint;
 
     final cleanUrl =
         url.length > 1 && url.startsWith('/') ? url.substring(1) : url;
