@@ -8,12 +8,7 @@ final class RequestBuilderTester {
     Map<String, String> headers = const {},
     Duration delay = Duration.zero,
   }) {
-    return FixtureProvider(
-      statusCode: statusCode,
-      content: content,
-      headers: headers,
-      delay: delay,
-    );
+    return FixtureProvider();
   }
 
   RequestBuilder makeMockBuilder({

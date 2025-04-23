@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:typed_data' show Uint8List;
 
 import 'package:meta/meta.dart' show isTest, visibleForTesting;
 import 'package:request_builder/request_builder.dart';
+import 'package:request_builder/src/types.dart';
 import 'package:test/test.dart';
 
 part 'fixture_provider.dart';
