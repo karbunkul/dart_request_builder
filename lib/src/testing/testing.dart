@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:typed_data' show Uint8List;
 
 import 'package:meta/meta.dart' show isTest, visibleForTesting;
