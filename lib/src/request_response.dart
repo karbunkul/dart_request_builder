@@ -8,7 +8,7 @@ import 'response_header.dart';
 typedef Bytes = List<int>;
 
 @immutable
-final class RequestResponse {
+class RequestResponse {
   final RequestContext request;
   final int statusCode;
   final Uint8List bytes;

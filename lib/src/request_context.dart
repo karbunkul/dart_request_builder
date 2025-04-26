@@ -2,7 +2,7 @@ import 'package:request_builder/src/types.dart';
 
 import 'request_body.dart';
 
-final class RequestContext {
+class RequestContext {
   final String method;
   final PlatformType platform;
   final Uri uri;
