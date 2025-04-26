@@ -2,27 +2,22 @@ part of 'testing.dart';
 
 @visibleForTesting
 final class RequestBuilderTester {
-  RequestProvider makeMockProvider({
-    int statusCode = 200,
-    List<int> content = const <int>[],
-    Map<String, String> headers = const {},
-    Duration delay = Duration.zero,
-  }) {
+  RequestProvider makeMockProvider() {
     return FixtureProvider();
   }
 
-  RequestBuilder makeMockBuilder({
+  FixtureBuilder makeMockBuilder({
     required PlatformType platform,
     Uri? endpoint,
     Duration? timeout,
     List<Interceptor>? interceptors,
   }) {
-    return RequestBuilder(
+    return FixtureBuilder(
       platform: platform,
       endpoint: endpoint?.toString(),
-      timeout: timeout,
-      provider: makeMockProvider(),
       interceptors: interceptors,
+      fixture: FixtureProvider(),
+      timeout: timeout,
     );
   }
 

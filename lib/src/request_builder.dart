@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
+import 'package:meta/meta.dart';
+
 import 'cache/cache_manager.dart';
 import 'cache/storage.dart';
 import 'interceptor.dart';
@@ -13,7 +15,7 @@ import 'request_provider.dart';
 import 'request_response.dart';
 import 'types.dart';
 
-class RequestBuilder {
+base class RequestBuilder {
   final String? endpoint;
   final String? debugLabel;
   final Duration? timeout;
@@ -21,6 +23,7 @@ class RequestBuilder {
 
   final bool debugMode;
   final List<Interceptor>? interceptors;
+  @protected
   final RequestProvider _provider;
 
   RequestBuilder({

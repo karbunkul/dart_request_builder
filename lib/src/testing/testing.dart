@@ -6,6 +6,7 @@ import 'package:request_builder/request_builder.dart';
 import 'package:request_builder/src/types.dart';
 import 'package:test/test.dart';
 
+part 'fixture_builder.dart';
 part 'fixture_provider.dart';
 part 'response_expect.dart';
 part 'tester.dart';

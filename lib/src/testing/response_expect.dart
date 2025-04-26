@@ -5,7 +5,8 @@ part of 'testing.dart';
 /// A helper class used to assert properties of a [RequestResponse] during tests.
 ///
 /// This class is intended for use in test environments to validate HTTP responses,
-/// such as status codes, headers, query parameters, and body presence. final class ResponseExpect {
+/// such as status codes, headers, query parameters, and body presence.
+/// final class ResponseExpect {
   /// The response data to be validated.
   final RequestResponse data;
 

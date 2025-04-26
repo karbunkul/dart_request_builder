@@ -7,6 +7,7 @@ export 'src/interceptor.dart';
 export 'src/multipart_form.dart';
 export 'src/providers/http_provider.dart';
 export 'src/providers/network_bandwith_provider.dart';
+export 'src/providers/stub_provider.dart' hide StubRegistry;
 export 'src/request_body.dart';
 export 'src/request_builder.dart';
 export 'src/request_context.dart';
