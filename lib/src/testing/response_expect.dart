@@ -6,7 +6,7 @@ part of 'testing.dart';
 ///
 /// This class is intended for use in test environments to validate HTTP responses,
 /// such as status codes, headers, query parameters, and body presence.
-/// final class ResponseExpect {
+final class ResponseExpect {
   /// The response data to be validated.
   final RequestResponse data;
 
